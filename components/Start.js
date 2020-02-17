@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, ImageBackground, Text, TextInput, Alert, TouchableOpacity, Button, View } from 'react-native';
 
+// Start-Screen
 export default class Start extends React.Component {
-
   constructor(props){
     super(props);
     this.state = {
@@ -13,6 +13,7 @@ export default class Start extends React.Component {
 
   render(){
   return (
+    //React Native component ImageBackground 
     <ImageBackground source={require('../assets/backgroundImage.png')} style={styles.backImage}>
       <Text style={styles.title}>Chat App</Text>
       <View style={styles.container}>
@@ -56,12 +57,13 @@ export default class Start extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#fefefe',
     alignItems: 'center',
     justifyContent: 'center',
     height: '44%',
     width: '88%',
-    marginBottom: 20
+    marginBottom: 150,
+
   },
   backImage:{
     flex: 1,
@@ -97,14 +99,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    margin: 15
+    margin: 15,
   },
+
   colorButton:{
-      height: 35,
-      width: 35,
-      borderRadius: 70,
-      margin: 20
+      height: 44,
+      width: 44,
+      borderRadius: 22,
+      margin: 20,
   },
+
   color1:{
     backgroundColor: '#090C08'
   },
