@@ -4,6 +4,7 @@ import Start from './components/Start';
 import Chat from './components/Chat';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 
 //navigation on app. start.js 1.Choose name & background color 2.Navigates to Chat.js
 const navigator = createStackNavigator({

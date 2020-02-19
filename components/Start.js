@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, ImageBackground, Text, TextInput, Alert, TouchableOpacity, Button, View } from 'react-native';
+import { StyleSheet, Platform, ImageBackground, Text, TextInput, Alert, TouchableOpacity, Button, View } from 'react-native';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 
 // Start-Screen
 export default class Start extends React.Component {
@@ -39,7 +40,7 @@ export default class Start extends React.Component {
             style={[styles.colorButton, styles.color3]}
           />
           <TouchableOpacity
-            onPress={() => this.setState({ color: '#B9C6AE'})}
+            onPress={() => this.setState({ color: '#ff6d0c'})}
             style={[styles.colorButton, styles.color4]}
           />
         </View>
@@ -48,6 +49,7 @@ export default class Start extends React.Component {
           title="Start Chatting"
           onPress={() => this.props.navigation.navigate('Chat', { name: this.state.name, color: this.state.color})}
         />
+        {Platform.OS === 'android' ? <KeyboardSpacer /> : null }
       </View>
     </ImageBackground>
   );
@@ -57,13 +59,12 @@ export default class Start extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fefefe',
+    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
     height: '44%',
     width: '88%',
-    marginBottom: 150,
-
+    marginBottom: 120
   },
   backImage:{
     flex: 1,
@@ -99,16 +100,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    margin: 15,
+    margin: 15
   },
-
   colorButton:{
-      height: 44,
-      width: 44,
-      borderRadius: 22,
-      margin: 20,
+      height: 35,
+      width: 35,
+      borderRadius: 70,
+      margin: 20
   },
-
   color1:{
     backgroundColor: '#090C08'
   },
@@ -119,7 +118,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#8A95A5'
   },
   color4:{
-    backgroundColor: '#B9C6AE'
+    backgroundColor: '#ff6d0c'
   },
   button: {
     fontSize: 16,
