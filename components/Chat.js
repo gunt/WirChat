@@ -3,6 +3,11 @@ import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { StyleSheet, View, Text, Platform } from "react-native";
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 
+const firebase = require('firebase');
+require('firebase/firestore');
+
+
+
 export default class Chat extends React.Component {
   // creation of the state object
   //A chat app needs to send, receive, and display messages, so it makes sense to add messages into the state object.
@@ -10,14 +15,34 @@ export default class Chat extends React.Component {
     super(props);
     this.state = {
       messages: [],
+      user: {
+        _id: '',
+        name: '',
+        avatar: ''
+      },
+      uid: 0
     }
+
+    var firebaseConfig = {
+      apiKey: "AIzaSyB-i22Bh0y9bzHMboFVLerRrTTCqznUcQo",
+    authDomain: "chatapp-00777.firebaseapp.com",
+    databaseURL: "https://chatapp-00777.firebaseio.com",
+    projectId: "chatapp-00777",
+    storageBucket: "chatapp-00777.appspot.com",
+    messagingSenderId: "325168557156",
+    appId: "1:325168557156:web:7eb6b38071d4e463ce0371",
+    measurementId: "G-P4PX54H1E3"
+    };
+
+    if (!firebase.apps.length){
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    this.referenceMessages = firebase.firestore().collection('messages');
   }
 
-  static navigationOptions = ({ navigation }) =>{
-    return {
-      title: navigation.state.params.name,
-    }
-  }
+
+
 
   //each element of the UI displayed on screen right away using the setState() function
   //componentWillMount() is a deprecated method.
