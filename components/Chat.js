@@ -7,8 +7,6 @@ const firebase = require('firebase');
 require('firebase/firestore');
 
 export default class Chat extends React.Component {
-  // creation of the state object
-  //A chat app needs to send, receive, and display messages, so it makes sense to add messages into the state object.
   constructor(){
     super();
     this.state = {
@@ -21,6 +19,11 @@ export default class Chat extends React.Component {
       uid: 0
     }
 
+    //Firebase Auth
+    // After running the code "expo r -c" to clear expo cache
+    // the chatAp work as expected. It is very important sometimes to do that.
+    // You will save hours but hours of development work. keep that in mind. :)
+    // this comment is for educational purpose
     var firebaseConfig = {
       apiKey: "AIzaSyBG3PvN4FYZI7hPaHUoWZlXui6I4eTU1Ss",
       authDomain: "chatr-de81d.firebaseapp.com",
