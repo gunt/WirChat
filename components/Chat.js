@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
-import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { StyleSheet, View, Text, Platform } from "react-native";
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 
 const firebase = require('firebase');
 require('firebase/firestore');
 
-
-
 export default class Chat extends React.Component {
   // creation of the state object
   //A chat app needs to send, receive, and display messages, so it makes sense to add messages into the state object.
-  constructor(props){
-    super(props);
+  constructor(){
+    super();
     this.state = {
       messages: [],
       user: {
@@ -24,15 +22,15 @@ export default class Chat extends React.Component {
     }
 
     var firebaseConfig = {
-      apiKey: "AIzaSyB-i22Bh0y9bzHMboFVLerRrTTCqznUcQo",
-    authDomain: "chatapp-00777.firebaseapp.com",
-    databaseURL: "https://chatapp-00777.firebaseio.com",
-    projectId: "chatapp-00777",
-    storageBucket: "chatapp-00777.appspot.com",
-    messagingSenderId: "325168557156",
-    appId: "1:325168557156:web:7eb6b38071d4e463ce0371",
-    measurementId: "G-P4PX54H1E3"
-    };
+      apiKey: "AIzaSyBG3PvN4FYZI7hPaHUoWZlXui6I4eTU1Ss",
+      authDomain: "chatr-de81d.firebaseapp.com",
+      databaseURL: "https://chatr-de81d.firebaseio.com",
+      projectId: "chatr-de81d",
+      storageBucket: "chatr-de81d.appspot.com",
+      messagingSenderId: "1099391712733",
+      appId: "1:1099391712733:web:d0b450bfe9ace063ef0a34",
+      measurementId: "G-0XD433W9WD"
+      };
 
     if (!firebase.apps.length){
       firebase.initializeApp(firebaseConfig);
@@ -42,7 +40,6 @@ export default class Chat extends React.Component {
   }
 
   //each element of the UI displayed on screen right away using the setState() function
-  //componentWillMount() is a deprecated method.
   componentDidMount() {
     this.authUnsubscribe = firebase.auth().onAuthStateChanged(async user => {
       if (!user) {
@@ -57,7 +54,7 @@ export default class Chat extends React.Component {
 
       this.setState({
         uid: user.uid,
-        loggedInText: 'Hello There'
+        loggedInText: 'Welcome to Chatroom'
       });
 
       this.unsubscribe = this.referenceMessages.onSnapshot(this.onCollectionUpdate);
@@ -100,15 +97,25 @@ export default class Chat extends React.Component {
     });
   }
 
+  get user() {
+    return {
+      name: this.props.navigation.state.params.name,
+      _id: this.state.uid,
+      id: this.state.uid,
+    }
+  }
+
   addMessage(){
     this.referenceMessages.add({
       _id: this.state.messages[0]._id,
       text: this.state.messages[0].text || '',
       createdAt: this.state.messages[0].createdAt,
-      user: this.state.user,
+      // user: this.state.user,
+      user: this.state.messages[0].user,
       uid: this.state.uid
     });
   }
+  
   //custom function named onSend() when a user sends a message. 
   onSend(messages = []) {
     this.setState(previousState => ({
@@ -122,11 +129,11 @@ export default class Chat extends React.Component {
   onCollectionUpdate = (querySnapshot) => {
     const messages = [];
     querySnapshot.forEach(doc => {
-      let data = doc.data();
+      var data = doc.data();
       messages.push({
         _id: data._id,
         text: data.text,
-        createdAt: data.createdAt.toDate(),
+        createdAt: data.Date,
         user: data.user
       });
     });
