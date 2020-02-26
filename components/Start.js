@@ -50,7 +50,6 @@ export default class Start extends React.Component {
           title="Start Chatting"
           onPress={() => this.props.navigation.navigate('Chat', { name: this.state.name, color: this.state.color})}
         />
-        {Platform.OS === 'android' ? <KeyboardSpacer /> : null }
       </View>
     </ImageBackground>
   );

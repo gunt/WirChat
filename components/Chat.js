@@ -2,6 +2,7 @@ import KeyboardSpacer from 'react-native-keyboard-spacer';
 import React, { Component } from "react";
 import { StyleSheet, View, Text, Platform, AsyncStorage } from "react-native";
 import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat';
+//import { NetInfoProvider } from 'react-native-netinfo';
 import NetInfo from "@react-native-community/netinfo";
 
 const firebase = require('firebase');
@@ -39,7 +40,6 @@ export default class Chat extends Component {
     this.referenceMessages = firebase.firestore().collection('messages');
   }
 
-  //Using NetInfo: exposes info about online/offline status NetInfo.
   componentDidMount(){
     NetInfo.fetch().then(state => {
       if (state.isConnected){
@@ -61,7 +61,7 @@ export default class Chat extends Component {
 
           this.setState({
             uid: user.uid,
-            loggedInText: 'TeleG Chat'
+            loggedInText: 'Hello There'
           });
 
           this.unsubscribe = this.referenceMessages.onSnapshot(this.onCollectionUpdate);
@@ -100,7 +100,6 @@ export default class Chat extends Component {
     });
   }
 
-  //asyncStorage implementation
   getMessages = async () => {
     let messages = [];
     try {
@@ -121,7 +120,6 @@ export default class Chat extends Component {
     }
   };
 
-  //asyncStorage delete Function
   deleteMessages = async () => {
     try {
       await AsyncStorage.removeItem('messages');
@@ -189,20 +187,19 @@ export default class Chat extends Component {
     };
   };
 
-render(){
-  return (
-    <View style={{flex: 1, backgroundColor: this.props.navigation.state.params.color}}>
-    {/* rendering your chat interface   */}
-    <Text>{this.state.loggedInText}</Text>
-    <GiftedChat
-          // renderBubble={this.renderBubble}
+  render() {
+    return(
+      <View style={{flex: 1, backgroundColor: this.props.navigation.state.params.color}}>
+        {/*Background color gets over-writted with the color the user selected from Start screen.*/}
+        <Text>{this.state.loggedInText}</Text>
+        <GiftedChat
           renderBubble={this.renderBubble.bind(this)}
           renderInputToolbar={this.renderInputToolbar.bind(this)}
           messages={this.state.messages}
           onSend={messages => this.onSend(messages)}
           user={this.state.user}
         />
-        {Platform.OS === "android" ? <KeyboardSpacer topSpacing={55} /> : null }
+        {/* {Platform.OS === "android" ? <KeyboardSpacer topSpacing={55} /> : null } */}
       </View>
     );
   }
