@@ -35,7 +35,9 @@
     "react-navigation-stack": "^2.1.1",
     "react-web-gifted-chat": "^0.6.7",
     "reason-react": "^0.7.0",
-    "reason-react-native": "^0.61.0"
+    "reason-react-native": "^0.61.0",
+    "expo-permissions": "~8.0.0",
+    "expo-image-picker": "~8.0.1"
   },
   "devDependencies": {
     "babel-preset-expo": "~8.0.0",
