@@ -3,6 +3,13 @@ import { StyleSheet, Platform, ImageBackground, Text, TextInput, Alert, Touchabl
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { GiftedChat } from "react-native-gifted-chat";
 
+const COLOR1 = "#EBC17A",
+      COLOR2 = "#BC5653",
+      COLOR3 = "#909D63",
+      COLOR4 = "#6A879A",
+      AllGEMEINE = "#727272";
+
+
 // Start-Screen
 export default class Start extends React.Component {
   constructor(props){
@@ -17,7 +24,7 @@ export default class Start extends React.Component {
   return (
     //React Native component ImageBackground 
     <ImageBackground source={require('../assets/backgroundImage.png')} style={styles.backImage}>
-      <Text style={styles.title}>Chat App</Text>
+      <Text style={styles.title}>Gunther Chat App</Text>
       <View style={styles.container}>
         <TextInput style={styles.nameBox}
           onChangeText={(name) => this.setState({name})}
@@ -29,26 +36,27 @@ export default class Start extends React.Component {
         </Text>
         <View style={styles.colorSelection}>
           <TouchableOpacity
-            onPress={() => this.setState({ color: '#090C08'})}
+            onPress={() => this.setState({ colorScheme: `${COLOR1}`})}
             style={[styles.colorButton, styles.color1]}
           />
           <TouchableOpacity
-            onPress={() => this.setState({ color: '#474056'})}
+            onPress={() => this.setState({ colorScheme: `${COLOR2}`})}
             style={[styles.colorButton, styles.color2]}
           />
           <TouchableOpacity
-            onPress={() => this.setState({ color: '#8A95A5'})}
+            onPress={() => this.setState({ colorScheme: `${COLOR3}`})}
             style={[styles.colorButton, styles.color3]}
           />
           <TouchableOpacity
-            onPress={() => this.setState({ color: '#ff6d0c'})}
+            onPress={() => this.setState({ colorScheme: `${COLOR4}`})}
             style={[styles.colorButton, styles.color4]}
           />
         </View>
         <Button
-          style={styles.button}
+          // style={styles.button}
+          color={`${AllGEMEINE}`}
           title="Start Chatting"
-          onPress={() => this.props.navigation.navigate('Chat', { name: this.state.name, color: this.state.color})}
+          onPress={() => this.props.navigation.navigate('Chat', { name: this.state.name, colorScheme: this.state.colorScheme })}
         />
       </View>
     </ImageBackground>
@@ -59,12 +67,14 @@ export default class Start extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFAFA',
     alignItems: 'center',
     justifyContent: 'center',
     height: '44%',
     width: '88%',
-    marginBottom: 120
+    borderRadius: 31,
+    marginBottom: 120,
+    opacity: 0.8,
   },
   backImage:{
     flex: 1,
@@ -75,9 +85,9 @@ const styles = StyleSheet.create({
   nameBox: {
     fontSize: 16,
     fontWeight: "600",
-    color: '#000000',
+    color: `${AllGEMEINE}`,
     borderWidth: 1,
-    borderColor: 'grey',
+    borderColor: `${AllGEMEINE}`,
     marginBottom: 30,
     marginTop: 30,
     width: '88%'
@@ -109,22 +119,22 @@ const styles = StyleSheet.create({
       margin: 20
   },
   color1:{
-    backgroundColor: '#090C08'
+    backgroundColor: `${COLOR1}`
   },
   color2:{
-    backgroundColor: '#474056'
+    backgroundColor: `${COLOR2}`
   },
   color3:{
-    backgroundColor: '#8A95A5'
+    backgroundColor: `${COLOR3}`
   },
   color4:{
-    backgroundColor: '#ff6d0c'
+    backgroundColor: `${COLOR4}`
   },
   button: {
     fontSize: 16,
     fontWeight: "600",
     color: '#FFFFFF',
-    backgroundColor: '#757083',
+    backgroundColor: `${AllGEMEINE}`,
     width: '88%',
     marginBottom: 30
   }

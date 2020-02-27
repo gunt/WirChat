@@ -56,24 +56,30 @@ export default class Chat extends Component {
         });
       }
       if (state.isConnected) {
-        this.authUnsubscribe = firebase.auth().onAuthStateChanged(async user => {
-          if (!user) {
-            await firebase.auth().signInAnonymously();
-          }
+        try {
+          this.authUnsubscribe = firebase.auth().onAuthStateChanged(async user => {
+            if (!user) {
+              await firebase.auth().signInAnonymously();
+            }
 
-          if (this.props.navigation.state.params.name){
-            this.setUser(user.uid, this.props.navigation.state.params.name);
-          } else {
-            this.setUser(user.uid);
-          }
+            if (this.props.navigation.state.params.name){
+              this.setUser(user.uid, this.props.navigation.state.params.name);
+            } else {
+              this.setUser(user.uid);
+            }
 
-          this.setState({
-            uid: user.uid,
-            loggedInText: 'You are online!'
+            this.setState({
+              uid: user.uid,
+              loggedInText: `You are online ${this.props.navigation.state.params.name}!`
+            });
+
+            this.unsubscribe = this.referenceMessages.orderBy('createdAt', 'desc').onSnapshot(this.onCollectionUpdate);
           });
+        } catch (err) {
+          console.log(err.message);
+        }
 
-          this.unsubscribe = this.referenceMessages.orderBy('createdAt', 'desc').onSnapshot(this.onCollectionUpdate);
-        });
+
       } else {
         this.setState({
           isConnected: false
@@ -118,7 +124,7 @@ export default class Chat extends Component {
         messages: JSON.parse(messages)
       });
     } catch (err){
-      console.error(err.message);
+      console.log(err.message);
     }
   };
 
@@ -126,7 +132,7 @@ export default class Chat extends Component {
     try {
       await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
     } catch (err){
-      console.error(err.message);
+      console.log(err.message);
     }
   };
 
@@ -134,7 +140,7 @@ export default class Chat extends Component {
     try {
       await AsyncStorage.removeItem('messages');
     } catch (err){
-      console.error(err.message);
+      console.log(err.message);
     }
   };
 
@@ -229,7 +235,7 @@ export default class Chat extends Component {
 
   render() {
     return(
-      <View style={{flex: 1, backgroundColor: this.props.navigation.state.params.color}}>
+      <View style={[styles.container, { backgroundColor: this.props.navigation.state.params.colorScheme}]}>
         {/*Background color gets over-writted with the color the user selected from Start screen.*/}
         <Text>{this.state.loggedInText}</Text>
         <GiftedChat
@@ -250,6 +256,7 @@ export default class Chat extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFF",
+    backgroundColor: "#000000",
   }
 });
+

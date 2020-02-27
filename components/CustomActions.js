@@ -20,14 +20,14 @@ export default class CustomActions extends Component {
       if (status === "granted"){
         let result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images
-        }).catch(err => console.error(err.message));
+        }).catch(err => console.log(err.message));
         if (!result.cancelled){
           const imageUrl = await this.uploadImage(result.uri);
           this.props.onSend({ image: imageUrl });
         }
       }
     } catch(err) {
-      console.error(err.message);
+        console.log(err.message);
     }
   }
 
@@ -37,14 +37,14 @@ export default class CustomActions extends Component {
       if(status === "granted"){
         let result = await ImagePicker.launchCameraAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images
-        }).catch(err => console.error(err.message));
+        }).catch(err => console.log(err.message));
         if (!result.cancelled){
           const imageUrl = await this.uploadImage(result.uri);
           this.props.onSend({ image: imageUrl });
         }
       }
     } catch(err) {
-      console.error(err.message);
+        console.log(err.message);
     }
   }
 
@@ -53,12 +53,7 @@ export default class CustomActions extends Component {
       const { status } = await Permissions.askAsync(Permissions.LOCATION);
       if (status === "granted"){
         let result = await Location.getCurrentPositionAsync({}).catch(
-          result = {
-            location: {
-              longitude: -38.119293,
-              latitude: -16.489689
-            }
-          }
+            console.log(err.message)
         );
         if (result) {
           this.props.onSend({
@@ -70,7 +65,7 @@ export default class CustomActions extends Component {
         }
       }
     } catch(err){
-      console.error(err.message);
+        console.log(err.message);
     }
   }
 
@@ -82,7 +77,7 @@ export default class CustomActions extends Component {
           resolve(xhr.response);
         };
         xhr.onerror = function(err) {
-          console.error(err);
+            console.log(err);
           reject(new TypeError('Network request failed'));
         };
         xhr.responseType = 'blob';
@@ -97,7 +92,7 @@ export default class CustomActions extends Component {
       const imageUrl = await snapshot.ref.getDownloadURL();
       return imageUrl;
     } catch(err){
-      console.error(err.message);
+        console.log(err);
     }
   }
 
