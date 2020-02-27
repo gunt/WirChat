@@ -1,3 +1,6 @@
+// using the expo install command to avoid installing incompatible dependencies
+// difference expo install versus npm install
+// https://forums.expo.io/t/difference-expo-install-versus-npm-install/31388/3
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import React, { Component } from "react";
 import { StyleSheet, View, Text, Platform, AsyncStorage } from "react-native";
@@ -24,6 +27,7 @@ export default class Chat extends Component {
       uid: 0
     }
 
+    // Firebase Authentication Webapp code
     var firebaseConfig = {
       apiKey: "AIzaSyBG3PvN4FYZI7hPaHUoWZlXui6I4eTU1Ss",
       authDomain: "chatr-de81d.firebaseapp.com",
@@ -42,6 +46,8 @@ export default class Chat extends Component {
     this.referenceMessages = firebase.firestore().collection('messages');
   }
 
+  //NetInfo implementation to check the connectivity reachability
+  //Dependencies Errors @react-native-community/netinfo": "4.6.0", ~ 5.5.1
   componentDidMount(){
     NetInfo.fetch().then(state => {
       if (state.isConnected){
@@ -160,6 +166,7 @@ export default class Chat extends Component {
     });
   };
 
+  //black bubble
   renderBubble(props) {
     return (
       <Bubble
@@ -222,7 +229,7 @@ export default class Chat extends Component {
 
   render() {
     return(
-      <View style={[styles.container, { backgroundColor: this.props.navigation.state.params.colorScheme}]}>
+      <View style={{flex: 1, backgroundColor: this.props.navigation.state.params.color}}>
         {/*Background color gets over-writted with the color the user selected from Start screen.*/}
         <Text>{this.state.loggedInText}</Text>
         <GiftedChat
