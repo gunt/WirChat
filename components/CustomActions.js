@@ -1,59 +1,90 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
-import firebase from "firebase";
-import "firebase/firestore";
+import firebase from 'firebase';
+import 'firebase/firestore';
 
-import * as Permissions from "expo-permissions";
-import * as ImagePicker from "expo-image-picker";
-import * as Location from "expo-location";
+import * as Permissions from 'expo-permissions';
+import * as ImagePicker from 'expo-image-picker';
+import * as Location from 'expo-location';
 
+/**
+ * @exports CustomActions
+ * @param  {} props
+ * @param  {} {super(props
+ */
 export default class CustomActions extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
   }
-
+  /**
+   * @function pickImage
+   * @param  {} =>{try{const{status}=awaitPermissions.askAsync(Permissions.CAMERA_ROLL
+   * @param  {} ;if(status==="granted"
+   * @param  {ImagePicker.MediaTypeOptions.Images}} {let result=awaitImagePicker.launchImageLibraryAsync({mediaTypes
+   */
   pickImage = async () => {
-    try{
+    try {
       const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (status === "granted"){
+      if (status === 'granted') {
         let result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images
         }).catch(err => console.log(err.message));
-        if (!result.cancelled){
+        if (!result.cancelled) {
           const imageUrl = await this.uploadImage(result.uri);
           this.props.onSend({ image: imageUrl });
         }
       }
-    } catch(err) {
-        console.log(err.message);
+    } catch (err) {
+      console.log(err.message);
     }
-  }
-
+  };
+  /**
+   * @function takePhoto
+   * @param  {} =>{try{const{status}=awaitPermissions.askAsync(Permissions.CAMERA_ROLL
+   * @param  {} Permissions.CAMERA
+   * @param  {} ;if(status==="granted"
+   * @param  {ImagePicker.MediaTypeOptions.Images}} {letresult=awaitImagePicker.launchCameraAsync({mediaTypes
+   * @returns null
+   */
   takePhoto = async () => {
     try {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL, Permissions. CAMERA);
-      if(status === "granted"){
+      const { status } = await Permissions.askAsync(
+        Permissions.CAMERA_ROLL,
+        Permissions.CAMERA
+      );
+      if (status === 'granted') {
         let result = await ImagePicker.launchCameraAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images
         }).catch(err => console.log(err.message));
-        if (!result.cancelled){
+        if (!result.cancelled) {
           const imageUrl = await this.uploadImage(result.uri);
           this.props.onSend({ image: imageUrl });
         }
       }
-    } catch(err) {
-        console.log(err.message);
+    } catch (err) {
+      console.log(err.message);
     }
-  }
-
+  };
+  /**
+   * @async
+   * @function getLocation
+   * @param  {} =>{try{const{status}=awaitPermissions.askAsync(Permissions.LOCATION
+   * @param  {} ;if(status==="granted"
+   * @param  {} {letresult=awaitLocation.getCurrentPositionAsync({}
+   * @param  {} .catch(console.log(err.message
+   * @param  {} ;if(result
+   * @param  {{longitude:result.coords.longitude} {this.props.onSend({location
+   * @param  {result.coords.latitude}}} latitude
+   * @returns null
+   */
   getLocation = async () => {
     try {
       const { status } = await Permissions.askAsync(Permissions.LOCATION);
-      if (status === "granted"){
+      if (status === 'granted') {
         let result = await Location.getCurrentPositionAsync({}).catch(
-            console.log(err.message)
+          console.log(err.message)
         );
         if (result) {
           this.props.onSend({
@@ -64,12 +95,12 @@ export default class CustomActions extends Component {
           });
         }
       }
-    } catch(err){
-        console.log(err.message);
+    } catch (err) {
+      console.log(err.message);
     }
-  }
+  };
 
-  uploadImage = async (uri) => {
+  uploadImage = async uri => {
     try {
       const blob = await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
@@ -77,7 +108,7 @@ export default class CustomActions extends Component {
           resolve(xhr.response);
         };
         xhr.onerror = function(err) {
-            console.log(err);
+          console.log(err);
           reject(new TypeError('Network request failed'));
         };
         xhr.responseType = 'blob';
@@ -86,25 +117,41 @@ export default class CustomActions extends Component {
       });
       let uriParts = uri.split('/');
       let imageName = uriParts[uriParts.length - 1];
-      const ref = firebase.storage().ref().child(`${imageName}`);
+      const ref = firebase
+        .storage()
+        .ref()
+        .child(`${imageName}`);
       const snapshot = await ref.put(blob);
       blob.close();
       const imageUrl = await snapshot.ref.getDownloadURL();
       return imageUrl;
-    } catch(err){
-        console.log(err);
+    } catch (err) {
+      console.log(err);
     }
-  }
+  };
 
+  /**
+   * @async
+   * @function getLocation
+   * @param  {} =>{constoptions=['ChooseImagefromLibrary'
+   * @param  {} 'TakePicture'
+   * @param  {} 'SendLocation'
+   * @returns function by Switch/Case
+   */
   onActionPress = () => {
-    const options = ['Choose Image from Library', 'Take Picture', 'Send Location', 'Cancel'];
+    const options = [
+      'Choose Image from Library',
+      'Take Picture',
+      'Send Location',
+      'Cancel'
+    ];
     const cancelButtonIndex = options.length - 1;
     this.context.actionSheet().showActionSheetWithOptions(
       {
         options,
         cancelButtonIndex
       },
-      async (buttonIndex) => {
+      async buttonIndex => {
         switch (buttonIndex) {
           case 0:
             return this.pickImage();
@@ -118,13 +165,15 @@ export default class CustomActions extends Component {
         }
       }
     );
-  }
-
-  render(){
-    return(
-      <TouchableOpacity
-        style={styles.container}
-        onPress={this.onActionPress}>
+  };
+  /**
+   * @param  {} {return(<TouchableOpacitystyle={styles.container}onPress={this.onActionPress}><Viewstyle={[styles.wrapper
+   * @param  {} this.props.wrapperStyle]}><Textstyle={[styles.iconText
+   * @param  {} this.props.iconTextStyle]}>+</Text></View></TouchableOpacity>
+   */
+  render() {
+    return (
+      <TouchableOpacity style={styles.container} onPress={this.onActionPress}>
         <View style={[styles.wrapper, this.props.wrapperStyle]}>
           <Text style={[styles.iconText, this.props.iconTextStyle]}>+</Text>
         </View>
@@ -142,16 +191,16 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     borderRadius: 13,
-    borderColor: "#333",
+    borderColor: '#333',
     borderWidth: 2,
     flex: 1
   },
   iconText: {
-    color: "#333",
-    fontWeight: "bold",
+    color: '#333',
+    fontWeight: 'bold',
     fontSize: 16,
-    backgroundColor: "transparent",
-    textAlign: "center"
+    backgroundColor: 'transparent',
+    textAlign: 'center'
   }
 });
 
