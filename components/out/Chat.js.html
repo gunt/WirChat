@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JSDoc: Source: Chat.js</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="styles/prettify-tomorrow.css"
+    />
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css" />
+  </head>
+
+  <body>
+    <div id="main">
+      <h1 class="page-title">Source: Chat.js</h1>
+
+      <section>
+        <article>
+          <pre
+            class="prettyprint source linenums"
+          ><code>// using the expo install command to avoid installing incompatible dependencies
+// difference expo install versus npm install
+// https://forums.expo.io/t/difference-expo-install-versus-npm-install/31388/3
+import KeyboardSpacer from 'react-native-keyboard-spacer';
+import React, { Component } from 'react';
+import { StyleSheet, View, Text, Platform, AsyncStorage } from 'react-native';
+import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat';
+import NetInfo from '@react-native-community/netinfo';
+import MapView from 'react-native-maps';
+
+import CustomActions from './CustomActions';
+
+const firebase = require('firebase');
+require('firebase/firestore');
+
+/**
+ * @param  {} props
+ * @param  {} {super(props
+ * @exports Chat
+ */
+export default class Chat extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isConnected: false,
+      messages: [],
+      user: {
+        _id: '',
+        name: '',
+        avatar: ''
+      },
+      uid: 0
+    };
+
+    // Firebase Authentication Webapp code
+    var firebaseConfig = {
+      apiKey: 'AIzaSyBG3PvN4FYZI7hPaHUoWZlXui6I4eTU1Ss',
+      authDomain: 'chatr-de81d.firebaseapp.com',
+      databaseURL: 'https://chatr-de81d.firebaseio.com',
+      projectId: 'chatr-de81d',
+      storageBucket: 'chatr-de81d.appspot.com',
+      messagingSenderId: '1099391712733',
+      appId: '1:1099391712733:web:d0b450bfe9ace063ef0a34',
+      measurementId: 'G-0XD433W9WD'
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    this.referenceMessages = firebase.firestore().collection('messages');
+  }
+  /**
+   * @param  {} {NetInfo.fetch(
+   * @param  {} .then(state=>{if(state.isConnected
+   * @param  {true}} {this.setState({isConnected
+   */
+  componentDidMount() {
+    NetInfo.fetch().then(state => {
+      if (state.isConnected) {
+        this.setState({
+          isConnected: true
+        });
+      }
+      if (state.isConnected) {
+        try {
+          this.authUnsubscribe = firebase
+            .auth()
+            .onAuthStateChanged(async user => {
+              if (!user) {
+                await firebase.auth().signInAnonymously();
+              }
+
+              if (this.props.navigation.state.params.name) {
+                this.setUser(user.uid, this.props.navigation.state.params.name);
+              } else {
+                this.setUser(user.uid);
+              }
+
+              this.setState({
+                uid: user.uid,
+                loggedInText: `You are online ${this.props.navigation.state.params.name}!`
+              });
+
+              this.unsubscribe = this.referenceMessages
+                .orderBy('createdAt', 'desc')
+                .onSnapshot(this.onCollectionUpdate);
+            });
+        } catch (err) {
+          console.log(err.message);
+        }
+      } else {
+        this.setState({
+          isConnected: false
+        });
+        this.getMessages();
+      }
+    });
+  }
+  /**
+   * @param  {} {this.authUnsubscribe(
+   * @param  {} ;this.unsubscribe(
+   */
+  componentWillUnmount() {
+    this.authUnsubscribe();
+    this.unsubscribe();
+  }
+  /**
+   * @function setUser
+   * @param  {} _id
+   * @param  {} name='Anonymous'
+   */
+  setUser = (_id, name = 'Anonymous') => {
+    this.setState({
+      user: {
+        _id: _id,
+        name: name,
+        avatar: 'https://placeimg.com/140/140/tech'
+      }
+    });
+  };
+  /**
+   * @function addMessage
+   * @param  {this.state.messages[0]._id} {this.referenceMessages.add({_id
+   * @param  {this.state.messages[0].text||''} text
+   * @param  {this.state.messages[0].createdAt} createdAt
+   * @param  {this.state.user} user
+   * @param  {this.state.uid} uid
+   * @param  {this.state.messages[0].image||''} image
+   * @param  {this.state.messages[0].location||null}} location
+   */
+  addMessage() {
+    this.referenceMessages.add({
+      _id: this.state.messages[0]._id,
+      text: this.state.messages[0].text || '',
+      createdAt: this.state.messages[0].createdAt,
+      user: this.state.user,
+      uid: this.state.uid,
+      image: this.state.messages[0].image || '',
+      location: this.state.messages[0].location || null
+    });
+  }
+  /**
+   * @param  {} =>{letmessages=[];try{messages=(awaitAsyncStorage.getItem('messages'
+   * @param  {JSON.parse(messages} ||[];this.setState({messages
+   * @returns null
+   */
+  getMessages = async () => {
+    let messages = [];
+    try {
+      messages = (await AsyncStorage.getItem('messages')) || [];
+      this.setState({
+        messages: JSON.parse(messages)
+      });
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+  /**
+   * Save messages to AsyncStorage
+   * @function saveMessages
+   * @returns null
+   */
+  saveMessages = async () => {
+    try {
+      await AsyncStorage.setItem(
+        'messages',
+        JSON.stringify(this.state.messages)
+      );
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+  /**
+   * @param  {} =>{try{awaitAsyncStorage.removeItem('messages'
+   * @param  {} ;}catch(err
+   * @param  {} {console.log(err.message
+   */
+  deleteMessages = async () => {
+    try {
+      await AsyncStorage.removeItem('messages');
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+  /**
+   * @param  {} messages=[]
+   */
+  onSend(messages = []) {
+    this.setState(
+      previousState => ({
+        messages: GiftedChat.append(previousState.messages, messages)
+      }),
+      () => {
+        this.addMessage();
+        this.saveMessages();
+      }
+    );
+  }
+  /**
+   * @function onCollectionUpdate
+   * @param  {} doc=>{letdata=doc.data(
+   * @param  {data._id} ;messages.push({_id
+   * @param  {data.text} text
+   * @param  {data.createdAt.toDate(} createdAt
+   */
+  onCollectionUpdate = querySnapshot => {
+    const messages = [];
+    querySnapshot.forEach(doc => {
+      let data = doc.data();
+      messages.push({
+        _id: data._id,
+        text: data.text,
+        createdAt: data.createdAt.toDate(),
+        user: data.user,
+        image: data.image || '',
+        location: data.location || null
+      });
+    });
+    this.setState({
+      messages
+    });
+  };
+
+  //black bubble
+  renderBubble(props) {
+    return (
+      &lt;Bubble
+        {...props}
+        wrapperStyle={{
+          right: {
+            backgroundColor: '#333'
+          },
+          left: {
+            backgroundColor: '#FFB'
+          }
+        }}
+      />
+    );
+  }
+
+  renderInputToolbar(props) {
+    if (this.state.isConnected) {
+      return &lt;InputToolbar {...props} />;
+    }
+  }
+
+  renderCustomActions = props => {
+    return &lt;CustomActions {...props} />;
+  };
+  /**
+   * @function renderCustomView
+   * @param  {} props
+   * @param  {} {const{currentMessage}=props;if(currentMessage.location
+   * @param  {300} {return(&lt;MapViewstyle={{width
+   * @param  {200} height
+   * @param  {13} borderRadius
+   * @param  {5}}region={{latitude:currentMessage.location.latitude} margin
+   * @param  {currentMessage.location.longitude} longitude
+   * @param  {0.0922} latitudeDelta
+   * @param  {0.0421}}/>} longitudeDelta
+   */
+  renderCustomView(props) {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
+      return (
+        &lt;MapView
+          style={{
+            width: 300,
+            height: 200,
+            borderRadius: 13,
+            margin: 5
+          }}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421
+          }}
+        />
+      );
+    }
+    return null;
+  }
+
+  //Sets the title in the Navigation Bar up top
+  static navigationOptions = ({ navigation }) => {
+    return {
+      title: navigation.state.params.name
+    };
+  };
+
+  render() {
+    return (
+      /**
+       * @param  {} this
+       * @param  {} }renderInputToolbar={this.renderInputToolbar.bind(this
+       * @param  {} }renderActions={this.renderCustomActions.bind(this
+       * @param  {} }renderCustomView={this.renderCustomView}messages={this.state.messages}onSend={messages=>this.onSend(messages
+       * @param  {null}&lt;/View>} }user={this.state.user}/>{Platform.OS==='android'?&lt;KeyboardSpacertopSpacing={55}/>
+       * @returns null
+       */
+      &lt;View
+        style={[
+          styles.container,
+          { backgroundColor: this.props.navigation.state.params.colorScheme }
+        ]}
+      >
+        {/*Background color gets over-writted with the color the user selected from Start screen.*/}
+        &lt;Text>{this.state.loggedInText}&lt;/Text>
+        &lt;GiftedChat
+          renderBubble={this.renderBubble.bind(this)}
+          renderInputToolbar={this.renderInputToolbar.bind(this)}
+          renderActions={this.renderCustomActions.bind(this)}
+          renderCustomView={this.renderCustomView}
+          messages={this.state.messages}
+          onSend={messages => this.onSend(messages)}
+          user={this.state.user}
+        />
+        {Platform.OS === 'android' ? &lt;KeyboardSpacer topSpacing={55} /> : null}
+      &lt;/View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000000'
+  }
+});
+</code></pre>
+        </article>
+      </section>
+    </div>
+
+    <nav>
+      <h2><a href="index.html">Home</a></h2>
+      <h3>Classes</h3>
+      <ul>
+        <li><a href="module-Chat.html">Chat</a></li>
+        <li><a href="module-CustomActions.html">CustomActions</a></li>
+        <li><a href="module-Start.html">Start</a></li>
+      </ul>
+      <h3>Global</h3>
+      <ul>
+        <li><a href="global.html#COLOR1">COLOR1</a></li>
+      </ul>
+    </nav>
+
+    <br class="clear" />
+
+    <footer>
+      Documentation generated by
+      <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Feb 28
+      2020 15:48:45 GMT+0100 (Central European Standard Time)
+    </footer>
+
+    <script>
+      prettyPrint();
+    </script>
+    <script src="scripts/linenumber.js"></script>
+  </body>
+</html>

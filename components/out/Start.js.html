@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JSDoc: Source: Start.js</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="styles/prettify-tomorrow.css"
+    />
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css" />
+  </head>
+
+  <body>
+    <div id="main">
+      <h1 class="page-title">Source: Start.js</h1>
+
+      <section>
+        <article>
+          <pre
+            class="prettyprint source linenums"
+          ><code>import React, { Component } from 'react';
+import {
+  StyleSheet,
+  ImageBackground,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Button,
+  View
+} from 'react-native';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
+import { GiftedChat } from 'react-native-gifted-chat';
+
+/**
+ * Five colors referenced values = strings
+ * @constant
+ * @type {string}
+ */
+const COLOR1 = '#EBC17A',
+  COLOR2 = '#BC5653',
+  COLOR3 = '#909D63',
+  COLOR4 = '#6A879A',
+  AllGEMEINE = '#727272';
+
+/**
+ * Start Screen
+ * @exports Start
+ */
+export default class Start extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: '',
+      color: ''
+    };
+  }
+
+  render() {
+    return (
+      //React Native component ImageBackground
+      &lt;ImageBackground
+        source={require('../assets/backgroundImage.png')}
+        style={styles.backImage}
+      >
+        &lt;Text style={styles.title}>Gunther Chat App&lt;/Text>
+        &lt;View style={styles.container}>
+          &lt;TextInput
+            style={styles.nameBox}
+            onChangeText={name => this.setState({ name })}
+            value={this.state.name}
+            placeholder='Your Name'
+          />
+          &lt;Text style={styles.text}>Choose Background Color:&lt;/Text>
+          &lt;View style={styles.colorSelection}>
+            &lt;TouchableOpacity
+              onPress={() => this.setState({ colorScheme: `${COLOR1}` })}
+              style={[styles.colorButton, styles.color1]}
+            />
+            &lt;TouchableOpacity
+              onPress={() => this.setState({ colorScheme: `${COLOR2}` })}
+              style={[styles.colorButton, styles.color2]}
+            />
+            &lt;TouchableOpacity
+              onPress={() => this.setState({ colorScheme: `${COLOR3}` })}
+              style={[styles.colorButton, styles.color3]}
+            />
+            &lt;TouchableOpacity
+              onPress={() => this.setState({ colorScheme: `${COLOR4}` })}
+              style={[styles.colorButton, styles.color4]}
+            />
+          &lt;/View>
+          &lt;Button
+            // style={styles.button}
+            color={`${AllGEMEINE}`}
+            title='Start Chatting'
+            onPress={() =>
+              this.props.navigation.navigate('Chat', {
+                name: this.state.name,
+                colorScheme: this.state.colorScheme
+              })
+            }
+          />
+        &lt;/View>
+      &lt;/ImageBackground>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFAFA',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '44%',
+    width: '88%',
+    borderRadius: 31,
+    marginBottom: 120,
+    opacity: 0.8
+  },
+  backImage: {
+    flex: 1,
+    alignItems: 'center',
+    width: '100%',
+    height: '100%'
+  },
+  nameBox: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: `${AllGEMEINE}`,
+    borderWidth: 1,
+    borderColor: `${AllGEMEINE}`,
+    marginBottom: 30,
+    marginTop: 30,
+    width: '88%'
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: '300',
+    color: '#757083'
+  },
+  title: {
+    flex: 1,
+    alignItems: 'center',
+    fontSize: 45,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginTop: 75
+  },
+  colorSelection: {
+    flex: 4,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    margin: 15
+  },
+  colorButton: {
+    height: 35,
+    width: 35,
+    borderRadius: 70,
+    margin: 20
+  },
+  color1: {
+    backgroundColor: `${COLOR1}`
+  },
+  color2: {
+    backgroundColor: `${COLOR2}`
+  },
+  color3: {
+    backgroundColor: `${COLOR3}`
+  },
+  color4: {
+    backgroundColor: `${COLOR4}`
+  },
+  button: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    backgroundColor: `${AllGEMEINE}`,
+    width: '88%',
+    marginBottom: 30
+  }
+});
+</code></pre>
+        </article>
+      </section>
+    </div>
+
+    <nav>
+      <h2><a href="index.html">Home</a></h2>
+      <h3>Classes</h3>
+      <ul>
+        <li><a href="module-Chat.html">Chat</a></li>
+        <li><a href="module-CustomActions.html">CustomActions</a></li>
+        <li><a href="module-Start.html">Start</a></li>
+      </ul>
+      <h3>Global</h3>
+      <ul>
+        <li><a href="global.html#COLOR1">COLOR1</a></li>
+      </ul>
+    </nav>
+
+    <br class="clear" />
+
+    <footer>
+      Documentation generated by
+      <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Feb 28
+      2020 15:48:45 GMT+0100 (Central European Standard Time)
+    </footer>
+
+    <script>
+      prettyPrint();
+    </script>
+    <script src="scripts/linenumber.js"></script>
+  </body>
+</html>

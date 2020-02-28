@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JSDoc: Source: CustomActions.js</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="styles/prettify-tomorrow.css"
+    />
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css" />
+  </head>
+
+  <body>
+    <div id="main">
+      <h1 class="page-title">Source: CustomActions.js</h1>
+
+      <section>
+        <article>
+          <pre
+            class="prettyprint source linenums"
+          ><code>import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+
+import firebase from 'firebase';
+import 'firebase/firestore';
+
+import * as Permissions from 'expo-permissions';
+import * as ImagePicker from 'expo-image-picker';
+import * as Location from 'expo-location';
+
+/**
+ * @exports CustomActions
+ * @param  {} props
+ * @param  {} {super(props
+ */
+export default class CustomActions extends Component {
+  constructor(props) {
+    super(props);
+  }
+  /**
+   * @function pickImage
+   * @param  {} =>{try{const{status}=awaitPermissions.askAsync(Permissions.CAMERA_ROLL
+   * @param  {} ;if(status==="granted"
+   * @param  {ImagePicker.MediaTypeOptions.Images}} {let result=awaitImagePicker.launchImageLibraryAsync({mediaTypes
+   */
+  pickImage = async () => {
+    try {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status === 'granted') {
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images
+        }).catch(err => console.log(err.message));
+        if (!result.cancelled) {
+          const imageUrl = await this.uploadImage(result.uri);
+          this.props.onSend({ image: imageUrl });
+        }
+      }
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+  /**
+   * @function takePhoto
+   * @param  {} =>{try{const{status}=awaitPermissions.askAsync(Permissions.CAMERA_ROLL
+   * @param  {} Permissions.CAMERA
+   * @param  {} ;if(status==="granted"
+   * @param  {ImagePicker.MediaTypeOptions.Images}} {letresult=awaitImagePicker.launchCameraAsync({mediaTypes
+   * @returns null
+   */
+  takePhoto = async () => {
+    try {
+      const { status } = await Permissions.askAsync(
+        Permissions.CAMERA_ROLL,
+        Permissions.CAMERA
+      );
+      if (status === 'granted') {
+        let result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images
+        }).catch(err => console.log(err.message));
+        if (!result.cancelled) {
+          const imageUrl = await this.uploadImage(result.uri);
+          this.props.onSend({ image: imageUrl });
+        }
+      }
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+  /**
+   * @async
+   * @function getLocation
+   * @param  {} =>{try{const{status}=awaitPermissions.askAsync(Permissions.LOCATION
+   * @param  {} ;if(status==="granted"
+   * @param  {} {letresult=awaitLocation.getCurrentPositionAsync({}
+   * @param  {} .catch(console.log(err.message
+   * @param  {} ;if(result
+   * @param  {{longitude:result.coords.longitude} {this.props.onSend({location
+   * @param  {result.coords.latitude}}} latitude
+   * @returns null
+   */
+  getLocation = async () => {
+    try {
+      const { status } = await Permissions.askAsync(Permissions.LOCATION);
+      if (status === 'granted') {
+        let result = await Location.getCurrentPositionAsync({}).catch(
+          console.log(err.message)
+        );
+        if (result) {
+          this.props.onSend({
+            location: {
+              longitude: result.coords.longitude,
+              latitude: result.coords.latitude
+            }
+          });
+        }
+      }
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+  uploadImage = async uri => {
+    try {
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+          resolve(xhr.response);
+        };
+        xhr.onerror = function(err) {
+          console.log(err);
+          reject(new TypeError('Network request failed'));
+        };
+        xhr.responseType = 'blob';
+        xhr.open('GET', uri, true);
+        xhr.send(null);
+      });
+      let uriParts = uri.split('/');
+      let imageName = uriParts[uriParts.length - 1];
+      const ref = firebase
+        .storage()
+        .ref()
+        .child(`${imageName}`);
+      const snapshot = await ref.put(blob);
+      blob.close();
+      const imageUrl = await snapshot.ref.getDownloadURL();
+      return imageUrl;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  /**
+   * @async
+   * @function getLocation
+   * @param  {} =>{constoptions=['ChooseImagefromLibrary'
+   * @param  {} 'TakePicture'
+   * @param  {} 'SendLocation'
+   * @returns function by Switch/Case
+   */
+  onActionPress = () => {
+    const options = [
+      'Choose Image from Library',
+      'Take Picture',
+      'Send Location',
+      'Cancel'
+    ];
+    const cancelButtonIndex = options.length - 1;
+    this.context.actionSheet().showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex
+      },
+      async buttonIndex => {
+        switch (buttonIndex) {
+          case 0:
+            return this.pickImage();
+          case 1:
+            return this.takePhoto();
+          case 2:
+            return this.getLocation();
+          case 3:
+            return null;
+          default:
+        }
+      }
+    );
+  };
+  /**
+   * @param  {} {return(&lt;TouchableOpacitystyle={styles.container}onPress={this.onActionPress}>&lt;Viewstyle={[styles.wrapper
+   * @param  {} this.props.wrapperStyle]}>&lt;Textstyle={[styles.iconText
+   * @param  {} this.props.iconTextStyle]}>+&lt;/Text>&lt;/View>&lt;/TouchableOpacity>
+   */
+  render() {
+    return (
+      &lt;TouchableOpacity style={styles.container} onPress={this.onActionPress}>
+        &lt;View style={[styles.wrapper, this.props.wrapperStyle]}>
+          &lt;Text style={[styles.iconText, this.props.iconTextStyle]}>+&lt;/Text>
+        &lt;/View>
+      &lt;/TouchableOpacity>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    width: 26,
+    height: 26,
+    marginLeft: 10,
+    marginBottom: 10
+  },
+  wrapper: {
+    borderRadius: 13,
+    borderColor: '#333',
+    borderWidth: 2,
+    flex: 1
+  },
+  iconText: {
+    color: '#333',
+    fontWeight: 'bold',
+    fontSize: 16,
+    backgroundColor: 'transparent',
+    textAlign: 'center'
+  }
+});
+
+CustomActions.contextTypes = {
+  actionSheet: PropTypes.func
+};
+</code></pre>
+        </article>
+      </section>
+    </div>
+
+    <nav>
+      <h2><a href="index.html">Home</a></h2>
+      <h3>Classes</h3>
+      <ul>
+        <li><a href="module-Chat.html">Chat</a></li>
+        <li><a href="module-CustomActions.html">CustomActions</a></li>
+        <li><a href="module-Start.html">Start</a></li>
+      </ul>
+      <h3>Global</h3>
+      <ul>
+        <li><a href="global.html#COLOR1">COLOR1</a></li>
+      </ul>
+    </nav>
+
+    <br class="clear" />
+
+    <footer>
+      Documentation generated by
+      <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Fri Feb 28
+      2020 15:48:45 GMT+0100 (Central European Standard Time)
+    </footer>
+
+    <script>
+      prettyPrint();
+    </script>
+    <script src="scripts/linenumber.js"></script>
+  </body>
+</html>
