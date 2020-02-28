@@ -80,3 +80,5 @@ shift + r
 "reason-react-native": "^0.61.0",<br />
 "expo-permissions": "~8.0.0",<br />
 "expo-image-picker": "~8.0.1"<br />
+
+[Kanban Board](https://trello.com/b/gnt1mydx/reactnatchatapp).
